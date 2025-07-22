@@ -366,3 +366,8 @@ def statistici_buget():
 
     return render_template('statistici_buget.html', statistici=statistici, luna=current_month)
 
+import os
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))  # ia portul din variabila de mediu sau pune 5000 implicit
+    app.run(host='0.0.0.0', port=port, debug=True)
