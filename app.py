@@ -366,6 +366,3 @@ def statistici_buget():
 
     return render_template('statistici_buget.html', statistici=statistici, luna=current_month)
 
-# Pornește serverul
-if __name__ == '__main__':
-    app.run(debug=True)
