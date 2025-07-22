@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Financiar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #f9f9f9;
+      color: #333;
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    h2, h3, h4 {
+      margin: 20px 0 10px;
+      color: #222;
+    }
+    form {
+      background-color: #fff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    label {
+      font-weight: 600;
+    }
+    input, select, button {
+      margin-top: 5px;
+      margin-bottom: 15px;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .bar-container {
+      background-color: #ddd;
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .bar {
+      background-color: #4CAF50;
+      text-align: center;
+      color: white;
+      padding: 5px 0;
+    }
+    ul#cheltuieli-lista {
+      list-style-type: none;
+      padding-left: 0;
+      margin: 10px 0;
+    }
+    .cheltuiala {
+      padding: 6px 8px;
+      border-bottom: 1px solid #eee;
+      cursor: context-menu;
+    }
+    .warning {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .logout-reset {
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      margin: 20px 0;
+    }
+    .chart-section {
+      margin-bottom: 20px;
+    }
+    .footer-links {
+      margin-top: 30px;
+    }
+    .footer-links a {
+      margin-right: 15px;
+      color: #4CAF50;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>Bun venit, {{ username }}!</h2>
+
+  <form method="POST">
+    <h3>Adaugă cheltuială</h3>
+    <label>Suma:</label>
+    <input type="number" step="0.01" name="amount" required>
+
+    <label>Categorie:</label>
+    <select name="category">
+      <option value="Mâncare">Mâncare</option>
+      <option value="Transport">Transport</option>
+      <option value="Haine">Haine</option>
+      <option value="Altele">Altele</option>
+    </select>
+
+    <label>Descriere (opțional):</label>
+    <input type="text" name="description">
+
+    <label>Dată:</label>
+    <input type="date" name="date">
+
+    <button type="submit">Adaugă</button>
+  </form>
+
+  <form method="POST" action="/set-budget">
+    <h3>Setează bugetul</h3>
+    <label>Buget lunar (lei):</label>
+    <input type="number" step="0.01" name="budget" required>
+    <button type="submit">Salvează</button>
+  </form>
+
+  <h3>Statistici buget</h3>
+  <p>Bugetul: {{ buget }} lei</p>
+  <p>Total cheltuit: {{ total_cheltuit }} lei</p>
+  <p>Rămas: {{ buget - total_cheltuit }} lei</p>
+
+  {% set diferenta = buget - total_cheltuit %}
+  {% if buget == 0 %}
+    <p class="warning" style="color: red;">❗ Nu ai setat bugetul!</p>
+  {% elif diferenta < 0 %}
+    <p class="warning" style="color: red;">❗ Ai depășit bugetul cu {{ diferenta | abs }} lei!</p>
+  {% elif diferenta <= 100 %}
+    <p class="warning" style="color: orange;">⚠️ Mai ai doar {{ diferenta }} lei!</p>
+  {% elif diferenta <= 500 %}
+    <p class="warning" style="color: darkorange;">🔸 Atenție, aproape de limită!</p>
+  {% endif %}
+
+  <div class="bar-container">
+    <div class="bar" style="width: {{ (total_cheltuit / buget * 100) if buget else 0 }}%">
+      {{ (total_cheltuit / buget * 100) | round(1) if buget else 0 }}%
+    </div>
+  </div>
+
+  <div class="logout-reset">
+    <form method="POST" action="/reset-luna">
+      <button type="submit">🔁 Resetează luna</button>
+    </form>
+  </div>
+
+<form method="GET" action="/statistici-buget">
+    <button type="submit">📊 Statistici buget</button>
+</form>
+
+
+  <h3>Cheltuielile curente</h3>
+  {% if expenses %}
+    <ul id="cheltuieli-lista">
+      {% for expense in expenses %}
+        <li class="cheltuiala" data-id="{{ expense['id'] }}">
+          {{ expense['date'] }} - {{ expense['category'] }}: {{ expense['amount'] }} lei ({{ expense['description'] or 'fără descriere' }})
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Nu ai cheltuieli înregistrate pentru luna curentă.</p>
+  {% endif %}
+
+
+
+  <form method="GET" action="/dashboard">
+    <label>Filtru categorie:</label>
+    <select name="categorie">
+        <option value="">Toate</option>
+        <option value="Mâncare">Mâncare</option>
+        <option value="Transport">Transport</option>
+        <option value="Haine">Haine</option>
+        <option value="Altele">Altele</option>
+    </select>
+
+    <label>Căutare după descriere:</label>
+    <input type="text" name="cautare" placeholder="Ex: pizza, uber">
+
+    <button type="submit">Filtrează</button>
+</form>
+
+
+  <div class="chart-section">
+    {% if categorii %}
+      <canvas id="chartCategorie" width="400" height="400"></canvas>
+    {% endif %}
+  </div>
+<form method="GET" action="/dashboard">
+    <label for="luna_istoric">Alege luna pentru istoric:</label>
+    <input type="month" name="luna_istoric" id="luna_istoric">
+    <button type="submit">Afișează</button>
+</form>
+
+  <h3>Istoric lunar</h3>
+  {% for luna, data in istoric.items() %}
+    <h4>{{ luna }} (Buget: {{ data.buget }} lei)</h4>
+    <p><strong>Total cheltuit: {{ data.cheltuieli | sum(attribute='amount') }} lei</strong></p>
+    <ul>
+      {% for item in data.cheltuieli %}
+        <li>{{ item['date'] }} - {{ item['category'] }}: {{ item['amount'] }} lei ({{ item['description'] or 'fără descriere' }})</li>
+      {% endfor %}
+    </ul>
+  {% endfor %}
+
+  <div class="footer-links">
+    <a href="/logout">Ieșire</a>
+    <a href="/delete-account" onclick="return confirm('Ești sigur că vrei să-ți ștergi contul?');" style="color: red;">Șterge contul</a>
+  </div>
+
+  <!-- Meniu contextual pentru editare/ștergere -->
+  <div id="contextMenu" style="display:none; position:absolute; z-index:1000; background:white; border:1px solid #ccc; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+    <form method="GET" id="editForm">
+      <button type="submit" style="padding:5px 10px; font-size:13px;">✏️ Editează</button>
+    </form>
+    <form method="POST" id="deleteForm" onsubmit="return confirm('Sigur vrei să ștergi această cheltuială?');">
+      <button type="submit" style="padding:5px 10px; font-size:13px; color:red;">🗑️ Șterge</button>
+    </form>
+  </div>
+
+  {% if categorii %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('chartCategorie').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: {{ categorii | map(attribute='category') | list }},
+        datasets: [{
+          label: 'Cheltuieli',
+          data: {{ categorii | map(attribute='total') | list }},
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#8BC34A'],
+          borderWidth: 1
+        }]
+      }
+    });
+  </script>
+  {% endif %}
+
+  <!-- Script pentru context menu -->
+  <script>
+    const contextMenu = document.getElementById('contextMenu');
+    const cheltuieli = document.querySelectorAll('.cheltuiala');
+    const editForm = document.getElementById('editForm');
+    const deleteForm = document.getElementById('deleteForm');
+
+    cheltuieli.forEach(elem => {
+      elem.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+        const id = this.getAttribute('data-id');
+
+        editForm.action = `/edit-expense/${id}`;
+        deleteForm.action = `/delete-expense/${id}`;
+
+        contextMenu.style.top = `${e.pageY}px`;
+        contextMenu.style.left = `${e.pageX}px`;
+        contextMenu.style.display = 'block';
+      });
+    });
+
+    document.addEventListener('click', () => {
+      contextMenu.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

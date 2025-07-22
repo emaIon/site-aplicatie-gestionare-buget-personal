@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Statistici Buget</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      padding: 20px;
+      background: #f4f6f9;
+      color: #333;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background: #4CAF50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h2>📈 Statistici buget pentru luna {{ luna }}</h2>
+
+  {% if statistici %}
+  <table>
+    <thead>
+      <tr>
+        <th>Categorie</th>
+        <th>Total cheltuit (lei)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in statistici %}
+      <tr>
+        <td>{{ row['category'] }}</td>
+        <td>{{ row['total'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>Nu ai cheltuieli înregistrate pentru luna aceasta.</p>
+  {% endif %}
+</body>
+</html>

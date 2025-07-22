@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Editează cheltuială</title>
+    <style>
+        body { font-family: Inter, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+        label, input, select { display: block; margin-bottom: 10px; width: 100%; }
+        button { padding: 10px 15px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <h2>Editează cheltuiala</h2>
+    <form method="POST">
+        <label>Suma:</label>
+        <input type="number" step="0.01" name="amount" value="{{ expense['amount'] }}" required>
+
+        <label>Categorie:</label>
+        <select name="category" required>
+            <option value="Mâncare" {% if expense['category'] == 'Mâncare' %}selected{% endif %}>Mâncare</option>
+            <option value="Transport" {% if expense['category'] == 'Transport' %}selected{% endif %}>Transport</option>
+            <option value="Haine" {% if expense['category'] == 'Haine' %}selected{% endif %}>Haine</option>
+            <option value="Altele" {% if expense['category'] == 'Altele' %}selected{% endif %}>Altele</option>
+        </select>
+
+        <label>Descriere:</label>
+        <input type="text" name="description" value="{{ expense['description'] or '' }}">
+
+        <label>Dată:</label>
+        <input type="date" name="date" value="{{ expense['date'] }}" required>
+
+        <button type="submit">Salvează modificările</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Înregistrare</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background-color: #f0f4f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .register-container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .login-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .login-link a {
+      color: #4CAF50;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <h2>Înregistrare</h2>
+    <form method="POST">
+      <label for="username">Nume utilizator:</label>
+      <input type="text" id="username" name="username" required>
+
+      <label for="password">Parolă:</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">Creează cont</button>
+    </form>
+    <div class="login-link">
+      Ai deja cont? <a href="/login">Autentifică-te</a>
+    </div>
+  </div>
+</body>
+</html>
